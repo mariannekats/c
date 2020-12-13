@@ -1,0 +1,236 @@
+[common.h]-----------------------------------------------------------------------------------------
+
+
+#include <stdio.h>
+#include<stdlib.h>
+#include<memory.h>
+
+typedef struct _DATA{
+
+	int no;
+	char name[16];
+	char surname[16]; 
+	int grade;
+	struct _DATA *next;
+
+}DATA;
+
+void intro();
+
+DATA* init(DATA* head, int* no);
+
+void print_menu();
+
+DATA* add(DATA* data);
+
+void list(DATA* head);
+
+void search(DATA* head);
+
+void save(DATA* head);
+
+
+
+
+[func.c]-------------------------------------------------------------------------------------------
+
+
+#include "common.h"
+
+void intro() {
+
+	printf("Manage Your Fish with C Fish Tank\n");
+	printf("\n");
+
+}
+
+
+DATA* init(DATA* head, int*no) {
+
+	FILE* fp = fopen("d:\\fishtank.txt", "rb");
+
+	if (!fp) {
+
+		printf("Uh-uh. We can't locate your tank!!\n");
+		printf("Create a text file D:\\fishtank.txt\n");
+		return 0;
+	}
+	else {
+
+		while (fread(head, sizeof(DATA), 1, fp)) {
+
+			*no = head->no;
+			(*no)++;
+
+			head->next = (DATA*)malloc(sizeof(DATA));
+			memset(head->next, 0x00, sizeof(DATA));
+			head = head->next;
+
+		}
+
+		fclose(fp);
+	}
+
+	return head;
+}
+
+
+void print_menu() {
+
+	printf("1. Add\n");
+	printf("2. Print\n");
+	printf("3. Search\n");
+	printf("4. Save\n");
+	printf("0. End\n");
+
+	return;
+}
+
+
+DATA* add(DATA* data, int* no) {
+
+	data->no = no;
+	printf("First Name: ");
+	scanf("%s", data->name);
+	printf("Last Name: ");
+	scanf("%s", data->surname);
+	printf("Affection Level (1 to 10, ten as highest): ");
+	scanf("%d", &data->grade);
+
+	printf("[%d] %s %s %d\n",
+		data->no,
+		data->name,
+		data->surname,
+		data->grade);
+
+	data->next = (DATA*)malloc(sizeof(DATA));
+	memset(data->next, 0x00, sizeof(DATA));
+
+	return data->next;
+}
+
+
+void list(DATA* head) {
+
+	while (head->next) {
+
+		printf("[%d] %s %s %d \n",
+			head->no,
+			head->name,
+			head->surname,
+			head->grade);
+
+		head = head->next;
+
+	}
+}
+
+
+void search(DATA* head) {
+
+	char find[16] = {0};
+	printf("Name: ");
+	scanf("%s", find);
+
+	while (head->next) {
+
+		if (strstr(head->name, find)) {
+
+			printf("[%d] %s %s %d \n",
+				head->no,
+				head->name,
+				head->surname,
+				head->grade);
+
+		}
+
+		head = head->next;
+	}
+}
+
+
+void save(DATA* head) {
+
+	FILE* fp = fopen("d:\\fishtank.txt", "wb");
+
+	if (!fp) {
+		printf("ERROR\n");
+		return 0;
+	}
+	else {
+
+		while (head->next) {
+
+			fwrite(head, sizeof(DATA), 1, fp);
+			head = head->next;
+		}
+
+		fclose(fp);
+	}
+}
+
+
+
+
+[main.c]-------------------------------------------------------------------------------------------
+
+
+#include "common.h"
+
+int main(int argc, char *argv[]) {
+
+	int menu = 0;
+	int no = 1;
+
+	DATA* data = (DATA*)malloc(sizeof(DATA));
+	memset(data, 0x00, sizeof(DATA));
+	DATA* head = data;
+	
+
+	intro();
+	data = init(head, &no);
+
+	while (1) {
+
+		print_menu();
+		printf("\n");
+		scanf("%d", &menu);
+		printf("\n");
+
+		switch (menu) {
+
+		case 0:
+			//save(node);
+			return 0;
+			break;
+
+		case 1:
+			data = add(data, no++);
+			break;
+
+		case 2:
+			list(head);
+			break;
+
+		case 3:
+			search(head);
+			break;
+
+		case 4:
+			save(head);
+			break;
+
+		default:
+			printf("Try again.\n");
+			break;
+
+		}
+
+		printf("\n");
+	}
+
+	return 0;
+}
+
+
+
