@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+
+int main()
+{
+	int ticket = 0;
+	int game[6] = { 0 };
+	int lotto = 0;
+	int num = 0;
+	int check = 0;
+	int check_ok = 0;
+	unsigned int localtime = (unsigned)time(NULL);
+	srand(localtime);
+
+	printf("How many tickets do you want? ");
+	scanf("%d", &ticket);
+	printf("\n");
+
+	while (ticket)
+	{
+		for (lotto = 0; lotto < 6; lotto++)
+		{
+			game[lotto] = 0;
+		}
+		for (lotto = 0; lotto < 6; lotto++)
+		{
+			num = rand() % 46 + 1;
+
+			for (check = 0; check < 6; check++)
+			{
+				if (game[lotto] == num)
+				{
+					check_ok = 0;
+					break;
+				}
+				else
+				{
+					check_ok = 1;
+				}
+			}
+			if (check_ok)
+			{
+				game[lotto] = num;
+			}
+			else
+			{
+				lotto--;
+			}
+		}
+
+		for (lotto = 0; lotto < 6; lotto++)
+		{
+			printf("%02d ", game[lotto]);
+		}
+
+		printf("\n");
+
+		ticket--;
+	}
+
+	printf("\n");
+	return 0;
+
+}
